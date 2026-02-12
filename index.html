@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* --- CORE STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fbcfe8 0%, #fecdd3 50%, #fee2e2 100%);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* The Glassmorphism Card */
+        .card {
+            background: rgba(255, 255, 255, 0.45); /* Slightly more opaque for better contrast */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 24px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            z-index: 10;
+        }
+
+        /* Typography */
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5rem;
+            color: #e11d48;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        p {
+            color: #374151;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+
+        /* Image Container */
+        .img-container {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .img-container img {
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        /* Buttons Area */
+        .btn-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            min-height: 60px;
+        }
+
+        button {
+            padding: 12px 32px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            white-space: nowrap;
+        }
+
+        /* YES Button */
+        #yesBtn {
+            background-color: #e11d48;
+            color: white;
+            box-shadow: 0 4px 15px rgba(225, 29, 72, 0.4);
+            z-index: 20;
+        }
+
+        #yesBtn:hover {
+            background-color: #be123c;
+            transform: scale(1.05);
+        }
+
+        /* NO Button */
+        #noBtn {
+            background-color: white;
+            color: #e11d48;
+            border: 2px solid #fecdd3;
+            z-index: 20;
+            /* Important for the jump logic */
+            position: relative; 
+        }
+
+        /* Floating Hearts Background - UPDATED */
+        .heart {
+            position: absolute;
+            color: #ff4d6d; /* Darker Pink for better visibility */
+            bottom: -50px;
+            animation: floatUp linear infinite;
+            z-index: 1;
+            font-size: 24px;
+            text-shadow: 0 0 5px rgba(255, 77, 109, 0.3);
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.9; /* High opacity */
+            }
+            90% {
+                opacity: 0.9; /* Stay visible longer */
+            }
+            100% {
+                transform: translateY(-110vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="hearts-container"></div>
+
+    <div class="card">
+        <div class="img-container">
+            <img id="gif-display" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmM2ZDJ4YjF4YjF4YjF4YjF4YjF4YjF4YjF4YjF4YjF4eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1cfxvGOPVpf9g3y/giphy.gif" alt="Cute Bear">
+        </div>
+
+        <h1 id="question">Hi Beautiful!</h1>
+        <p id="sub-text">Will you be my Valentine?</p>
+
+        <div class="btn-container">
+            <button id="yesBtn" onclick="acceptLove()">YES! ❤️</button>
+            <button id="noBtn" onmouseover="moveButton()" onclick="moveButton()" ontouchstart="moveButton()">No 💔</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Background Logic (Stronger Hearts) ---
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartCount = 25; // More hearts
+
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤';
+                
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's'; // Faster: 3-6s
+                heart.style.fontSize = (Math.random() * 20 + 25) + 'px'; // Bigger
+                
+                container.appendChild(heart);
+            }
+        }
+        createHearts();
+
+        // --- 2. Button Logic (Restricted Jump) ---
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+
+        function moveButton() {
+            // Get current button position info
+            const btnRect = noBtn.getBoundingClientRect();
+            const btnWidth = btnRect.width;
+            const btnHeight = btnRect.height;
+
+            // Get screen boundaries
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            // Define the "Jump Range" (how far it moves from current spot)
+            // 200px is a good balance for desktop (not too far)
+            const jumpRange = 100; 
+
+            // Calculate random movement within range (-250 to +250)
+            let randomX = (Math.random() * jumpRange * 2) - jumpRange;
+            let randomY = (Math.random() * jumpRange * 2) - jumpRange;
+
+            // If we are currently "static" (first hover), use the rect coordinates as base
+            let currentX = (noBtn.style.position === 'fixed') ? parseFloat(noBtn.style.left) : btnRect.left;
+            let currentY = (noBtn.style.position === 'fixed') ? parseFloat(noBtn.style.top) : btnRect.top;
+
+            // Calculate new potential position
+            let newX = currentX + randomX;
+            let newY = currentY + randomY;
+
+            // --- BOUNDARY CHECKS (Keep it on screen) ---
+            
+            // Check Left/Right edges
+            if (newX < 10) newX = 10;
+            if (newX + btnWidth > windowWidth - 10) newX = windowWidth - btnWidth - 10;
+
+            // Check Top/Bottom edges
+            if (newY < 10) newY = 10;
+            if (newY + btnHeight > windowHeight - 10) newY = windowHeight - btnHeight - 10;
+
+            // Apply new position
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = newX + 'px';
+            noBtn.style.top = newY + 'px';
+
+            // Make YES button grow bigger
+            const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+            if(currentSize < 50) {
+                yesBtn.style.fontSize = (currentSize * 1.15) + 'px';
+                yesBtn.style.padding = '15px 40px'; 
+            }
+        }
+
+        // --- 3. Acceptance Logic ---
+        function acceptLove() {
+            document.getElementById('gif-display').src = "https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif";
+            document.getElementById('question').innerText = "Yay! I Knew it! 💖";
+            document.getElementById('sub-text').innerText = "Best decision ever! See you on the 14th! FEB";
+            document.querySelector('.btn-container').style.display = 'none';
+
+            triggerConfetti();
+        }
+
+        function triggerConfetti() {
+            const duration = 3000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInOut(min, max) { return Math.random() * (max - min) + min; }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+
+                const particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+    </script>
+</body>
+</html>
